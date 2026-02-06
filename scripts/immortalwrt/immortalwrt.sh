@@ -1,5 +1,49 @@
 #!/bin/bash
 
+# 颜色输出
+color() {
+    case "$1" in
+        cr) echo -e "\e[1;31m${2}\e[0m" ;;  # 红色
+        cg) echo -e "\e[1;32m${2}\e[0m" ;;  # 绿色
+        cy) echo -e "\e[1;33m${2}\e[0m" ;;  # 黄色
+        cb) echo -e "\e[1;34m${2}\e[0m" ;;  # 蓝色
+        cp) echo -e "\e[1;35m${2}\e[0m" ;;  # 紫色
+        cc) echo -e "\e[1;36m${2}\e[0m" ;;  # 青色
+        cw) echo -e "\e[1;37m${2}\e[0m" ;;  # 白色
+    esac
+}
+
+# 状态显示和时间统计
+status_info() {
+    local task_name="$1" begin_time=$(date +%s) exit_code time_info
+    shift
+    "$@"
+    exit_code=$?
+    [[ "$exit_code" -eq 99 ]] && return 0
+    if [[ -n "$begin_time" ]]; then
+        time_info="==> 用时 $(($(date +%s) - begin_time)) 秒"
+    else
+        time_info=""
+    fi
+    if [[ "$exit_code" -eq 0 ]]; then
+        printf "%s %-52s %s %s %s %s %s %s %s\n" \
+        $(color cy "⏳ $task_name") [ $(color cg ✔) ] $(color cw "$time_info")
+    else
+        printf "%s %-52s %s %s %s %s %s %s %s\n" \
+        $(color cy "⏳ $task_name") [ $(color cr ✖) ] $(color cw "$time_info")
+    fi
+}
+
+# 查找目录
+find_dir() {
+    find $1 -maxdepth 3 -type d -name "$2" -print -quit 2>/dev/null
+}
+
+# 打印信息
+print_info() {
+    printf "%s %-40s %s %s %s\n" "$1" "$2" "$3" "$4" "$5"
+}
+
 # 添加整个源仓库(git clone)
 git_clone() {
     local repo_url branch target_dir current_dir
