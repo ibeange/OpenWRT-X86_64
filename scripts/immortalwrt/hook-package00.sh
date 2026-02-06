@@ -203,8 +203,10 @@ git clone https://github.com/ximiTech/luci-app-msd_lite customfeeds/luci/applica
 git clone https://github.com/ximiTech/msd_lite customfeeds/packages/net/msd_lite
 
 # UU游戏加速器
-github clone https://github.com/coolsnowwolf/luci/tree/master/applications/luci-app-uugamebooster customfeeds/luci/applications/luci-app-uugamebooster
-github clone https://github.com/coolsnowwolf/packages/tree/master/net/uugamebooster customfeeds/packages/net/uugamebooster
+clone_dir https://github.com/kiddin9/kwrt-packages luci-app-uugamebooster
+mv -f ptemp/luci-app-uugamebooster customfeeds/luci/applications/
+clone_dir https://github.com/kiddin9/kwrt-packages uugamebooster
+mv -f ptemp/uugamebooster customfeeds/packages/net/
 
 # 关机
 git clone https://github.com/sirpdboy/luci-app-poweroffdevice customfeeds/luci/applications/luci-app-poweroffdevice
