@@ -196,11 +196,10 @@ sed -i 's/0666/0644/g;s/0777/0755/g' customfeeds/packages/net/samba4/files/smb.c
 # rm -rf customfeeds/luci/applications/luci-app-sqm
 # git clone https://git.cooluc.com/sbwml/luci-app-sqm customfeeds/luci/applications/luci-app-sqm
 
+rm-rf customfeeds/luci/applications/luci-app-smartdns
+rm-rf customfeeds/packages/net/smartdns
 git clone https://github.com/pymumu/luci-app-smartdns customfeeds/luci/applications/luci-app-smartdns
 git clone https://github.com/pymumu/openwrt-smartdns customfeeds/packages/net/smartdns
-
-git clone https://github.com/ximiTech/luci-app-msd_lite customfeeds/luci/applications/luci-app-msd_lite
-git clone https://github.com/ximiTech/msd_lite customfeeds/packages/net/msd_lite
 
 # UU游戏加速器
 clone_dir https://github.com/kiddin9/kwrt-packages luci-app-uugamebooster
