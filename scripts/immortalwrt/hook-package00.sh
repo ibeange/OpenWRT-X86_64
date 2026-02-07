@@ -210,7 +210,7 @@ mv -f ptemp/uugamebooster customfeeds/packages/net/
 
 # 关机
 git clone https://github.com/sirpdboy/luci-app-poweroffdevice customfeeds/luci/applications/luci-app-poweroffdevice
-sed -i 's/"title": "PowerOff"/"title": "立即关机"/g' feeds/luci/applications/luci-app-poweroffdevice/luci-app-poweroffdevice/root/usr/share/luci/menu.d/luci-app-poweroffdevice.json
+sed -i 's/msgstr "关机"/msgstr "立即关机"/g' customfeeds/luci/applications/luci-app-poweroffdevice/po/zh-cn/poweroffdevice.po
 
 # v2ray-server
 git clone https://github.com/ibeange/luci-app-v2ray-server customfeeds/luci/applications/luci-app-v2ray-server
@@ -221,7 +221,7 @@ mv -f ptemp/xray-core customfeeds/packages/net/
 # 添加 Turbo ACC 网络加速
 clone_dir https://github.com/kiddin9/kwrt-packages luci-app-turboacc
 mv -f ptemp/luci-app-turboacc customfeeds/luci/applications/
-sed -i 's/msgstr "Turbo ACC 网络加速""/msgstr "网络加速"/g' customfeeds/luci/applications/luci-app-turboacc/po/zh-cn/turboacc.po
+sed -i 's/msgstr "Turbo ACC 网络加速"/msgstr "网络加速"/g' customfeeds/luci/applications/luci-app-turboacc/po/zh-cn/turboacc.po
 
 # procps-ng - top
 sed -i 's/enable-skill/enable-skill --disable-modern-top/g' customfeeds/packages/utils/procps-ng/Makefile
