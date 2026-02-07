@@ -28,7 +28,48 @@ sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
 
 # Modify default IP
 sed -i 's/192.168.1.1/10.1.0.7/g' package/base-files/files/bin/config_generate
-sed -i "s/ImmortalWrt/Ethan/g" package/base-files/files/bin/config_generate
+sed -i "s/ImmortalWrt/EthanWRT/g" package/base-files/files/bin/config_generate
+
+# ===============================
+# Modify firmware version branding
+# ===============================
+
+echo "🏷️ 修改固件版本信息 / Modifying firmware version information..."
+
+# ===== 基本变量 =====
+BUILD_DATE="$(date +%Y.%m.%d)"
+FW_NAME="EthanWRT"
+FW_VERSION="R${BUILD_DATE}"
+FW_BUILDER="Compiled by Ethan"
+FW_DESC="${FW_NAME} ${FW_VERSION} ${FW_BUILDER}"
+
+echo "[DIY] Firmware description: ${FW_DESC}"
+
+# -------------------------------
+# 方法 1：修改 openwrt_release 模板（LuCI 右下角最关键）
+# -------------------------------
+if [ -f "package/base-files/files/etc/openwrt_release" ]; then
+    sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='${FW_DESC}'/" \
+        package/base-files/files/etc/openwrt_release
+fi
+
+# -------------------------------
+# 方法 2：修改 include/version.mk（影响 RELEASE / 版本生成）
+# -------------------------------
+if [ -f "include/version.mk" ]; then
+    sed -i "s/^RELEASE:=.*/RELEASE:=${FW_NAME} ${FW_VERSION}/" include/version.mk
+    sed -i "s/^VERSION_REPO:=.*/VERSION_REPO:=${FW_BUILDER}/" include/version.mk
+fi
+
+# -------------------------------
+# 方法 3：修改 Config-build.in 默认显示（低优先级，做兼容）
+# -------------------------------
+if [ -f "config/Config-build.in" ]; then
+    sed -i "s/default \".*\"/default \"${FW_DESC}\"/" config/Config-build.in
+fi
+
+echo "✅ 固件版本信息修改完成 / Firmware version information modified"
+
 
 sed -i 's/"网络存储"/"存储"/g' `grep "网络存储" -rl ./`
 
