@@ -34,6 +34,10 @@ sed -i "s/ImmortalWrt/EthanWRT/g" package/base-files/files/bin/config_generate
 # Modify firmware version branding
 # ===============================
 
+# 移除 SNAPSHOT 标签
+sed -i 's,-SNAPSHOT,,g' include/version.mk
+sed -i 's,-SNAPSHOT,,g' package/base-files/image-config.in
+
 echo "🏷️ 修改固件版本信息 / Modifying firmware version information..."
 
 # ===== 基本变量 =====
