@@ -212,15 +212,10 @@ mv -f ptemp/uugamebooster customfeeds/packages/net/
 git clone https://github.com/sirpdboy/luci-app-poweroffdevice customfeeds/luci/applications/luci-app-poweroffdevice
 
 # v2ray-server
-clone_dir https://github.com/kiddin9/kwrt-packages luci-app-v2ray-server
-mv -f ptemp/luci-app-v2ray-server customfeeds/luci/applications/
+git clone https://github.com/ibeange/luci-app-v2ray-server customfeeds/luci/applications/luci-app-v2ray-server
 clone_dir https://github.com/kiddin9/kwrt-packages xray-core
 mv -f ptemp/xray-core customfeeds/packages/net/
 
-# 调整 V2ray服务器 到 VPN 菜单 (修正路径)
-sed -i 's/services/vpn/g' customfeeds/luci/applications//luci-app-v2ray-server/luasrc/controller/*.lua
-sed -i 's/services/vpn/g' customfeeds/luci/applications//luci-app-v2ray-server/luasrc/model/cbi/v2ray_server/*.lua
-sed -i 's/services/vpn/g' customfeeds/luci/applications//luci-app-v2ray-server/luasrc/view/v2ray_server/*.htm
 
 # 添加 Turbo ACC 网络加速
 clone_dir https://github.com/kiddin9/kwrt-packages luci-app-turboacc
