@@ -210,7 +210,7 @@ mv -f ptemp/uugamebooster customfeeds/packages/net/
 
 # 关机
 git clone https://github.com/sirpdboy/luci-app-poweroffdevice customfeeds/luci/applications/luci-app-poweroffdevice
-sed -i 's/"title": "PowerOff"/"title": "立即关机"/g' /customfeeds/luci/applications/luci-app-poweroffdevice/root/usr/share/luci/menu.d/luci-app-poweroffdevice.json
+sed -i 's/"title": "PowerOff"/"title": "立即关机"/g' feeds/luci/applications/luci-app-poweroffdevice/luci-app-poweroffdevice/root/usr/share/luci/menu.d/luci-app-poweroffdevice.json
 
 # v2ray-server
 git clone https://github.com/ibeange/luci-app-v2ray-server customfeeds/luci/applications/luci-app-v2ray-server
