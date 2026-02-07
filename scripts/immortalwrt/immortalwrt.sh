@@ -70,8 +70,39 @@ fi
 
 echo "✅ 固件版本信息修改完成 / Firmware version information modified"
 
+echo "🏷️ 修改系统菜单信息 / Modifying firmware version information..."
 
+echo "修改一级菜单名称"
 sed -i 's/"网络存储"/"存储"/g' `grep "网络存储" -rl ./`
+
+echo "修改二级菜单名称"
+
+#状态
+sed -i '/"admin\/status\/processes"/,/"order"/ s/"order":[[:space:]]*2/"order": 3/' feeds/luci/modules/luci-mod-status/root/usr/share/luci/menu.d/luci-mod-status.json
+sed -i '/"admin\/status\/iptables"/,/"order"/ s/"order":[[:space:]]*3/"order": 4/' feeds/luci/modules/luci-mod-status/root/usr/share/luci/menu.d/luci-mod-status.json
+sed -i '/"admin\/status\/firewall"/,/"order"/ s/"order":[[:space:]]*3/"order": 4/' feeds/luci/modules/luci-mod-status/root/usr/share/luci/menu.d/luci-mod-status.json
+
+#系统
+sed -i 's/"管理权"/"权限管理"/g' feeds/luci/modules/luci-base/po/zh_Hans/base.po
+sed -i 's/"重启"/"立即重启"/g' feeds/luci/modules/luci-base/po/zh_Hans/base.po
+sed -i 's/"备份与更新"/"备份升级"/g' feeds/luci/modules/luci-base/po/zh_Hans/base.po
+sed -i 's/"挂载点"/"挂载路径"/g' feeds/luci/modules/luci-base/po/zh_Hans/base.po
+sed -i 's/"启动项"/"启动管理"/g' feeds/luci/modules/luci-base/po/zh_Hans/base.po
+sed -i 's/"软件包"/"软件管理"/g' feeds/luci/modules/luci-base/po/zh_Hans/base.po
+sed -i 's/"终端"/"命令终端"/g' feeds/luci/applications/luci-app-ttyd/po/zh_Hans/ttyd.po
+
+#服务
+sed -i 's|("OpenClash"), 50)|("OpenClash"), 3)|g' customfeeds/lovepackages/luci-app-openclash/luasrc/controller/*.lua
+sed -i 's/"Vlmcsd KMS 服务器"/"KMS服务"/g' $(grep "KMS 服务器" -rl ./)
+
+#网络
+sed -i 's/"接口"/"网络接口"/g' `grep "接口" -rl ./`
+sed -i 's/"Bandix 流量监控"/"流量监控"/g' customfeeds/lovepackages/luci-app-bandix/luci-app-bandix/po/zh_Hans/bandix.po
+sed -i 's/msgstr "UPnP IGD 和 PCP"/msgstr "UPnP服务"/g' feeds/luci/applications/luci-app-upnp/po/zh_Hans/upnp.po
+sed -i 's/msgstr "SQM 队列管理"/msgstr "队列管理"/g' feeds/luci/applications/luci-app-sqm/po/zh_Hans/sqm.po
+sed -i 's/msgstr "3cat"/msgstr "端口转发"/g' feeds/luci/applications/luci-app-3cat/po/zh_Hans/3cat.po
+
+echo "✅ 系统菜单信息修改完成 / Firmware version information modified"
 
 # 修改开源站地址
 # sed -i '/@OPENWRT/a\\t\t"https://source.cooluc.com",' scripts/projectsmirrors.json
