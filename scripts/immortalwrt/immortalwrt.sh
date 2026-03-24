@@ -110,9 +110,7 @@ sed -i 's/msgstr "3cat"/msgstr "端口转发"/g' feeds/luci/applications/luci-ap
 echo "✅ 系统菜单信息修改完成 / Firmware version information modified"
 
 # 修改开源站地址
-# sed -i '/@OPENWRT/a\\t\t"https://source.cooluc.com",' scripts/projectsmirrors.json
-sed -i 's/mirror.iscas.ac.cn/mirrors.ustc.edu.cn/g' scripts/projectsmirrors.json
-# sed -i '6,8d;15,18d;33,36d' scripts/projectsmirrors.json
+sed -i '54,56d;63d' scripts/projectsmirrors.json
 
 sed -i 's/services/network/g' customfeeds/luci/applications/luci-app-upnp/root/usr/share/luci/menu.d/luci-app-upnp.json
 sed -i 's/services/vpn/g' customfeeds/luci/applications/luci-app-frpc/root/usr/share/luci/menu.d/luci-app-frpc.json
