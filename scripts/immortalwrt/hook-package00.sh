@@ -204,11 +204,21 @@ rm -rf customfeeds/packages/net/xray-core
 git clone https://github.com/pymumu/luci-app-smartdns customfeeds/luci/applications/luci-app-smartdns
 git clone https://github.com/pymumu/openwrt-smartdns customfeeds/packages/net/smartdns
 
-# UU游戏加速器
-clone_dir main https://github.com/kenzok8/small-package luci-app-uugamebooster
-mv -f ptemp/luci-app-uugamebooster customfeeds/luci/applications/
-clone_dir main https://github.com/kenzok8/small-package  uugamebooster
-mv -f ptemp/uugamebooster customfeeds/packages/net/
+# small-package
+small_package_dir="$(mktemp -d)"
+git clone -q --depth=1 --filter=blob:none --sparse -b main https://github.com/kenzok8/small-package "$small_package_dir"
+git -C "$small_package_dir" sparse-checkout set other/lean xray-core
+
+rm -rf customfeeds/luci/applications/luci-app-uugamebooster
+rm -rf customfeeds/packages/net/uugamebooster
+rm -rf customfeeds/luci/applications/luci-app-turboacc
+rm -rf customfeeds/packages/net/xray-core
+
+mv -f "$small_package_dir/other/lean/luci-app-uugamebooster" customfeeds/luci/applications/
+mv -f "$small_package_dir/other/lean/uugamebooster" customfeeds/packages/net/
+mv -f "$small_package_dir/xray-core" customfeeds/packages/net/
+mv -f "$small_package_dir/other/lean/luci-app-turboacc" customfeeds/luci/applications/
+rm -rf "$small_package_dir"
 
 # 关机
 git clone https://github.com/sirpdboy/luci-app-poweroffdevice customfeeds/luci/applications/luci-app-poweroffdevice
@@ -216,13 +226,6 @@ sed -i 's/msgstr "关机"/msgstr "立即关机"/g' customfeeds/luci/applications
 
 # v2ray-server
 git clone https://github.com/ibeange/luci-app-v2ray-server customfeeds/luci/applications/luci-app-v2ray-server
-clone_dir https://github.com/kenzok8/small-package xray-core
-mv -f ptemp/xray-core customfeeds/packages/net/
-
-
-# 添加 Turbo ACC 网络加速
-clone_dir main https://github.com/kenzok8/small-package luci-app-turboacc
-mv -f ptemp/luci-app-turboacc customfeeds/luci/applications/
 sed -i 's/msgstr "Turbo ACC 网络加速"/msgstr "网络加速"/g' customfeeds/luci/applications/luci-app-turboacc/po/zh-cn/turboacc.po
 
 # procps-ng - top
