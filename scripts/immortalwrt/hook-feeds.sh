@@ -1,4 +1,6 @@
 #!/bin/bash
+set -Ee -o pipefail
+
 # Set to local feeds
 pushd customfeeds/lovepackages
 export lovepackages_feed="$(pwd)"

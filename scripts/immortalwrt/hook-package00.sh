@@ -1,4 +1,6 @@
 #!/bin/bash
+set -Ee -o pipefail
+
 # Set to local prepare
 
 # 颜色输出
@@ -203,9 +205,9 @@ git clone https://github.com/pymumu/luci-app-smartdns customfeeds/luci/applicati
 git clone https://github.com/pymumu/openwrt-smartdns customfeeds/packages/net/smartdns
 
 # UU游戏加速器
-clone_dir https://github.com/kiddin9/kwrt-packages luci-app-uugamebooster
+clone_dir https://github.com/kenzok8/small-package/tree/main/other/lean luci-app-uugamebooster
 mv -f ptemp/luci-app-uugamebooster customfeeds/luci/applications/
-clone_dir https://github.com/kiddin9/kwrt-packages uugamebooster
+clone_dir https://github.com/kenzok8/small-package/tree/main/other/lean uugamebooster
 mv -f ptemp/uugamebooster customfeeds/packages/net/
 
 # 关机
@@ -214,12 +216,12 @@ sed -i 's/msgstr "关机"/msgstr "立即关机"/g' customfeeds/luci/applications
 
 # v2ray-server
 git clone https://github.com/ibeange/luci-app-v2ray-server customfeeds/luci/applications/luci-app-v2ray-server
-clone_dir https://github.com/kiddin9/kwrt-packages xray-core
+clone_dir https://github.com/kenzok8/small-package xray-core
 mv -f ptemp/xray-core customfeeds/packages/net/
 
 
 # 添加 Turbo ACC 网络加速
-clone_dir https://github.com/kiddin9/kwrt-packages luci-app-turboacc
+clone_dir https://github.com/kenzok8/small-package/tree/main/other/lean luci-app-turboacc
 mv -f ptemp/luci-app-turboacc customfeeds/luci/applications/
 sed -i 's/msgstr "Turbo ACC 网络加速"/msgstr "网络加速"/g' customfeeds/luci/applications/luci-app-turboacc/po/zh-cn/turboacc.po
 
@@ -236,12 +238,12 @@ rm -rf customfeeds/packages/net/xtables-addons
 git clone https://github.com/sbwml/kmod_packages_net_xtables-addons customfeeds/packages/net/xtables-addons
 # netatop
 sed -i 's/$(MAKE)/$(KERNEL_MAKE)/g' customfeeds/packages/admin/netatop/Makefile
-curl -s https://raw.githubusercontent.com/xuanranran/r4s_build_script/refs/heads/master/openwrt/patch/packages-patches/clang/netatop/900-fix-build-with-clang.patch > customfeeds/packages/admin/netatop/patches/900-fix-build-with-clang.patch
+curl -fsSL https://raw.githubusercontent.com/xuanranran/r4s_build_script/refs/heads/master/openwrt/patch/packages-patches/clang/netatop/900-fix-build-with-clang.patch > customfeeds/packages/admin/netatop/patches/900-fix-build-with-clang.patch
 # dmx_usb_module
 rm -rf customfeeds/packages/libs/dmx_usb_module
 git clone https://github.com/xuanranran/feeds_packages_libs_dmx_usb_module customfeeds/packages/libs/dmx_usb_module
 # macremapper
-curl -s https://raw.githubusercontent.com/xuanranran/r4s_build_script/refs/heads/6.6/openwrt/patch/packages-patches/clang/macremapper/100-macremapper-fix-clang-build.patch | patch -p1
+curl -fsSL https://raw.githubusercontent.com/xuanranran/r4s_build_script/refs/heads/6.6/openwrt/patch/packages-patches/clang/macremapper/100-macremapper-fix-clang-build.patch | patch -p1
 # coova-chilli module
 rm -rf customfeeds/packages/net/coova-chilli
 git clone https://github.com/sbwml/kmod_packages_net_coova-chilli customfeeds/packages/net/coova-chilli

@@ -86,12 +86,8 @@ cleanup() {
 echo
 echo -e "${C_BLUE}信息：${C_RESET}正在清理 /tmp 目录中可能存在的旧固件及校验文件..."
 rm -f "$IMAGE_PATH_GZ" "$IMAGE_PATH_IMG" "$CHECKSUM_PATH"
-echo -e "${C_YELLOW}警告：${C_RESET}  正在清理 /tmp 目录下所有的 ${C_RED}*.img${C_RESET} 和 ${C_RED}*.gz${C_RESET} 文件！"
-/bin/rm -f ${TMP_DIR}/*.img ${TMP_DIR}/*.gz
-echo -e "${C_BLUE}信息：${C_RESET}  .img / .gz 文件清理完成。"
-echo -e "${C_BLUE}信息：${C_RESET}  正在清理 /tmp 目录下名称含 'upgrade' 或 'update' 的 .sh 脚本..."
-/bin/rm -f ${TMP_DIR}/*upgrade*.sh ${TMP_DIR}/*update*.sh
-echo -e "${C_BLUE}信息：${C_RESET}  相关 .sh 脚本清理完成。"
+echo -e "${C_BLUE}信息：${C_RESET}  已清理本脚本固定使用的固件及校验文件。"
+echo -e "${C_BLUE}信息：${C_RESET}  为避免误删用户文件，不再清理 /tmp 下其他 .img/.gz/.sh 文件。"
 echo -e "${C_B_YELLOW}注意：${C_RESET}脚本【不会】清理 ${C_RED}/root${C_RESET} 目录下的任何文件。如有需要请手动清理。"
 echo -e "${C_B_GREEN}初始清理完成。${C_RESET}"
 # *** 清理结束 ***

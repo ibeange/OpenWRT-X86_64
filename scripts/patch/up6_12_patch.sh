@@ -23,7 +23,7 @@ echo "Downloading patch: ${PATCH_FILE}..."
 # -sS: 静默模式，但显示错误
 # -L:  跟随重定向
 # -o:  指定输出文件
-curl -sS -L -o "$PATCH_FILE" "$PATCH_URL"
+curl -fsSL -o "$PATCH_FILE" "$PATCH_URL"
 
 # 检查上一条命令 (curl) 的退出状态码
 # 在 shell 中，$? 代表上一条命令的退出状态码，0 通常代表成功

@@ -9,7 +9,7 @@ on:
   #   types: started
 
 env:
-  USER_NAME: xuanranran
+  USER_NAME: ibeange
   REPO_BRANCH: master
   CONFIG_FILE: configs/immortalwrt/immortalwrt.config
   DIY_SH: scripts/immortalwrt/immortalwrt.sh
@@ -55,7 +55,7 @@ jobs:
         sudo swapoff -a && sudo rm -f /swapfile /mnt/swapfile
         sudo -E apt -yqq purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
         sudo -E apt -yqq update
-        sudo -E apt -yqq install $(curl -fsSL is.gd/depends_ubuntu_2404)
+        sudo -E apt -yqq install $(curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/refs/heads/main/make-openwrt/scripts/ubuntu2404-make-openwrt-depends)
         sudo -E apt -yqq autoremove --purge
         sudo -E apt -yqq autoclean
         sudo -E apt -yqq clean
@@ -65,7 +65,7 @@ jobs:
     - name: Clone Source Code
       run: |
         df -hT $PWD
-        git clone https://github.com/$USER_NAME/immortalwrt -b $REPO_BRANCH openwrt
+        git clone https://github.com/immortalwrt/immortalwrt -b $REPO_BRANCH openwrt
 
     - name: Update Feeds
       id: update
@@ -76,8 +76,8 @@ jobs:
         mkdir customfeeds
         git clone --depth=1 https://github.com/xuanranran/openwrt-package customfeeds/lovepackages
         git clone --depth=1 https://github.com/xuanranran/rely customfeeds/loverely
-        git clone --depth=1 https://github.com/$USER_NAME/packages -b $REPO_BRANCH customfeeds/packages
-        git clone --depth=1 https://github.com/$USER_NAME/luci -b $REPO_BRANCH customfeeds/luci
+        git clone --depth=1 https://github.com/xuanranran/packages -b $REPO_BRANCH customfeeds/packages
+        git clone --depth=1 https://github.com/xuanranran/luci -b $REPO_BRANCH customfeeds/luci
         git clone --depth=1 https://github.com/openwrt/routing -b $REPO_BRANCH customfeeds/routing
         git clone --depth=1 https://github.com/openwrt/telephony -b $REPO_BRANCH customfeeds/telephony
         echo "::group::Executing package hook scripts"
@@ -163,7 +163,7 @@ jobs:
 
     - name: Generate release tag
       id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: success() && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
           echo "release_tag=$(date +"%Y.%m.%d")-immortalwrt" >> $GITHUB_OUTPUT
           echo "release_date=$(date "+%Y年%m月%d日")" >> $GITHUB_OUTPUT
@@ -171,7 +171,7 @@ jobs:
           echo "release_kernel=$KERNEL_VERSION" >> $GITHUB_OUTPUT
           touch release.txt
           echo -e "**📥固件说明**: \n" >> release.txt
-          echo -e "#### 后台地址: \`192.168.11.1\`\n" >> release.txt
+          echo -e "#### 后台地址: \`10.1.0.1\`\n" >> release.txt
           echo -e "#### 后台密码: \`password\`\n" >> release.txt
           echo -e "#### Linux Kernel: **$KERNEL_VERSION**\n" >> release.txt
           echo "status=success" >> $GITHUB_OUTPUT

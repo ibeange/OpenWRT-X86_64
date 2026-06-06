@@ -1,4 +1,6 @@
 #!/bin/bash
+set -Ee -o pipefail
+
 #=================================================
 # File name: preset-terminal-tools.sh
 # System Required: Linux
