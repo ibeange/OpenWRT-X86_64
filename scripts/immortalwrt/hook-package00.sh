@@ -205,9 +205,9 @@ git clone https://github.com/pymumu/luci-app-smartdns customfeeds/luci/applicati
 git clone https://github.com/pymumu/openwrt-smartdns customfeeds/packages/net/smartdns
 
 # UU游戏加速器
-clone_dir https://github.com/kenzok8/small-package/tree/main/other/lean luci-app-uugamebooster
+clone_dir main https://github.com/kenzok8/small-package luci-app-uugamebooster
 mv -f ptemp/luci-app-uugamebooster customfeeds/luci/applications/
-clone_dir https://github.com/kenzok8/small-package/tree/main/other/lean uugamebooster
+clone_dir main https://github.com/kenzok8/small-package  uugamebooster
 mv -f ptemp/uugamebooster customfeeds/packages/net/
 
 # 关机
@@ -221,7 +221,7 @@ mv -f ptemp/xray-core customfeeds/packages/net/
 
 
 # 添加 Turbo ACC 网络加速
-clone_dir https://github.com/kenzok8/small-package/tree/main/other/lean luci-app-turboacc
+clone_dir main https://github.com/kenzok8/small-package luci-app-turboacc
 mv -f ptemp/luci-app-turboacc customfeeds/luci/applications/
 sed -i 's/msgstr "Turbo ACC 网络加速"/msgstr "网络加速"/g' customfeeds/luci/applications/luci-app-turboacc/po/zh-cn/turboacc.po
 
