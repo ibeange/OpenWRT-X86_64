@@ -107,7 +107,11 @@ sed -i 's/"Vlmcsd KMS 服务器"/"KMS服务"/g' $(grep "KMS 服务器" -rl ./)
 
 #网络
 sed -i 's/"接口"/"网络接口"/g' `grep "接口" -rl ./`
-sed -i 's/"Bandix 流量监控"/"流量监控"/g' customfeeds/lovepackages/luci-app-bandix/luci-app-bandix/po/zh_Hans/bandix.po
+if [ -f customfeeds/lovepackages/luci-app-bandix/po/zh_Hans/bandix.po ]; then
+    sed -i 's/"Bandix 流量监控"/"流量监控"/g' customfeeds/lovepackages/luci-app-bandix/po/zh_Hans/bandix.po
+else
+    echo "Info: luci-app-bandix zh_Hans translation not found, skipping rename."
+fi
 sed -i 's/msgstr "UPnP IGD 和 PCP"/msgstr "UPnP服务"/g' feeds/luci/applications/luci-app-upnp/po/zh_Hans/upnp.po
 sed -i 's/msgstr "SQM 队列管理"/msgstr "队列管理"/g' feeds/luci/applications/luci-app-sqm/po/zh_Hans/sqm.po
 sed -i 's/msgstr "3cat"/msgstr "端口转发"/g' feeds/luci/applications/luci-app-3cat/po/zh_Hans/3cat.po
