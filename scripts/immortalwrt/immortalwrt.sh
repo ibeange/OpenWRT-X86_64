@@ -39,10 +39,6 @@ sed -i "s/ImmortalWrt/EthanWRT/g" package/base-files/files/bin/config_generate
 # Modify firmware version branding
 # ===============================
 
-# 移除 SNAPSHOT 标签
-sed -i 's,-SNAPSHOT,,g' include/version.mk
-sed -i 's,-SNAPSHOT,,g' package/base-files/image-config.in
-
 echo "🏷️ 修改固件版本信息 / Modifying firmware version information..."
 
 # ===== 基本变量 =====
@@ -50,32 +46,148 @@ BUILD_DATE="$(date +%Y.%m.%d)"
 FW_NAME="EthanWRT"
 FW_VERSION="R${BUILD_DATE}"
 FW_BUILDER="Compiled by Ethan"
-FW_DESC="${FW_NAME} ${FW_VERSION} ${FW_BUILDER}"
+FW_STATUS_DESC="ImmortalWrt SNAPSHOT ${FW_BUILDER} ${FW_VERSION}"
+FW_FOOTER_DESC="${FW_NAME} ${FW_VERSION} ${FW_BUILDER}"
 
-echo "[DIY] Firmware description: ${FW_DESC}"
+export FW_VERSION FW_BUILDER FW_STATUS_DESC FW_FOOTER_DESC
 
-# -------------------------------
-# 方法 1：修改 openwrt_release 模板（LuCI 右下角最关键）
-# -------------------------------
-if [ -f "package/base-files/files/etc/openwrt_release" ]; then
-    sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='${FW_DESC}'/" \
-        package/base-files/files/etc/openwrt_release
-fi
+echo "[DIY] Status firmware version: ${FW_STATUS_DESC} / <compiled LuCI branch and short version>"
+echo "[DIY] Footer version: Powered by <compiled LuCI branch> (<compiled LuCI short version>) / ${FW_FOOTER_DESC}"
 
 # -------------------------------
-# 方法 2：修改 include/version.mk（影响 RELEASE / 版本生成）
+# 方法 1：修改版本配置与 openwrt_release 模板
 # -------------------------------
-if [ -f "include/version.mk" ]; then
-    sed -i "s/^RELEASE:=.*/RELEASE:=${FW_NAME} ${FW_VERSION}/" include/version.mk
-    sed -i "s/^VERSION_REPO:=.*/VERSION_REPO:=${FW_BUILDER}/" include/version.mk
-fi
+python3 <<'PY'
+import os
+from pathlib import Path
 
-# -------------------------------
-# 方法 3：修改 Config-build.in 默认显示（低优先级，做兼容）
-# -------------------------------
-if [ -f "config/Config-build.in" ]; then
-    sed -i "s/default \".*\"/default \"${FW_DESC}\"/" config/Config-build.in
-fi
+fw_version = os.environ["FW_VERSION"]
+fw_builder = os.environ["FW_BUILDER"]
+fw_status_desc = os.environ["FW_STATUS_DESC"]
+fw_footer_desc = os.environ["FW_FOOTER_DESC"]
+
+def update_key_value(path, values):
+    path = Path(path)
+    if not path.exists():
+        return
+    lines = path.read_text().splitlines()
+    seen = set()
+    out = []
+    for line in lines:
+        key = line.split("=", 1)[0]
+        if key in values:
+            out.append(f"{key}={values[key]}")
+            seen.add(key)
+        else:
+            out.append(line)
+    for key, value in values.items():
+        if key not in seen:
+            out.append(f"{key}={value}")
+    path.write_text("\n".join(out) + "\n")
+
+update_key_value(".config", {
+    "CONFIG_VERSION_DIST": '"ImmortalWrt"',
+    "CONFIG_VERSION_NUMBER": '"SNAPSHOT"',
+    "CONFIG_VERSION_CODE": f'"{fw_builder} {fw_version}"',
+})
+
+update_key_value("package/base-files/files/etc/openwrt_release", {
+    "DISTRIB_ID": "'ImmortalWrt'",
+    "DISTRIB_RELEASE": "'SNAPSHOT'",
+    "DISTRIB_REVISION": f"'{fw_builder} {fw_version}'",
+    "DISTRIB_DESCRIPTION": f"'{fw_status_desc}'",
+})
+
+for root in ("customfeeds", "feeds", "package"):
+    base = Path(root)
+    if not base.exists():
+        continue
+
+    for path in base.glob("**/luci-base/src/Makefile"):
+        text = path.read_text()
+        old = "echo \"export const revision = '$(LUCI_VERSION)', branch = '$(LUCI_GITBRANCH)';\" > $@"
+        new = "echo \"export const revision = '$$(printf '%s\\n' '$(LUCI_VERSION)' | cut -d. -f1,2)', branch = '$(LUCI_GITBRANCH)';\" > $@"
+        if old in text:
+            path.write_text(text.replace(old, new))
+
+    for path in base.glob("**/luci-lua-runtime/src/mkversion.sh"):
+        text = path.read_text()
+        if "short_luciversion=" not in text:
+            text = text.replace(
+                "cat <<EOF > $1",
+                "short_luciversion=\"$(printf '%s\\n' \"${2:-Git}\" | cut -d. -f1,2)\"\ncat <<EOF > $1",
+            )
+        text = text.replace('luciversion = "${2:-Git}"', 'luciversion = "${short_luciversion}"')
+        path.write_text(text)
+
+footer_line = f"Powered by {{{{ version.luciname }}}} ({{{{ version.luciversion }}}}) / {fw_footer_desc}"
+
+for root in ("customfeeds", "feeds", "package"):
+    base = Path(root)
+    if not base.exists():
+        continue
+
+    for path in base.glob("**/ucode/template/themes/**/footer.ut"):
+        text = path.read_text()
+        original = text
+
+        if "themes/bootstrap/footer.ut" in str(path):
+            start = text.find("\t\t\t<span>")
+            end = text.find("\t\t\t</span>", start)
+            if start != -1 and end != -1:
+                replacement = (
+                    "\t\t\t<span>\n"
+                    f"\t\t\t\t{footer_line}\n"
+                    "\t\t\t</span>"
+                )
+                text = text[:start] + replacement + text[end + len("\t\t\t</span>"):]
+
+        elif "themes/material/footer.ut" in str(path):
+            lines = text.splitlines()
+            out = []
+            skip_next = False
+            for line in lines:
+                if skip_next:
+                    skip_next = False
+                    continue
+                if "Powered by {{ version.luciname }}" in line:
+                    indent = line[:len(line) - len(line.lstrip())]
+                    out.append(f"{indent}{footer_line}")
+                    skip_next = "version.distname" not in line
+                elif "version.distname" in line:
+                    continue
+                else:
+                    out.append(line)
+            text = "\n".join(out) + "\n"
+
+        elif "themes/argon/footer.ut" in str(path):
+            lines = text.splitlines()
+            out = []
+            skip_theme_separator = False
+            for line in lines:
+                if "Powered by {{ version.luciname }}" in line:
+                    indent = line[:len(line) - len(line.lstrip())]
+                    out.append(f"{indent}<span class=\"luci-link\">{footer_line}</span>")
+                    skip_theme_separator = True
+                elif skip_theme_separator and (
+                    "footer-separator" in line
+                    or "ArgonTheme" in line
+                    or "version.distname" in line
+                ):
+                    continue
+                else:
+                    out.append(line)
+            text = "\n".join(out) + "\n"
+
+        elif "Powered by {{ version.luciname }}" in text:
+            text = text.replace(
+                "Powered by {{ version.luciname }} ({{ version.luciversion }})",
+                footer_line,
+            )
+
+        if text != original:
+            path.write_text(text)
+PY
 
 echo "✅ 固件版本信息修改完成 / Firmware version information modified"
 
@@ -134,7 +246,6 @@ orders = {
     "admin/services/rtp2httpd": 60,
     "admin/services/vlmcsd": 70,
     "admin/services/openclash": 80,
-    "admin/services/ddns": 90,
 }
 
 for root in ("customfeeds", "package", "feeds"):
