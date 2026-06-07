@@ -104,15 +104,70 @@ find customfeeds package feeds -path '*/luci-app-netdata/root/usr/share/luci/men
     -exec sed -i 's/"title": "Netdata"/"title": "网络监控"/g' {} +
 find customfeeds package feeds -path '*/luci-app-netdata/po/zh_Hans/netdata.po' -type f \
     -exec sed -i '/msgid "Netdata"/{n;s/msgstr "Netdata"/msgstr "网络监控"/;}' {} +
+find customfeeds package feeds -path '*/root/usr/share/luci/menu.d/*.json' -type f \
+    -exec sed -i '/"admin\/system\/plugins"/,/"title"/ s/"title": "[^"]*"/"title": "鉴权扩展"/' {} +
+find customfeeds package feeds -path '*/po/zh_Hans/*.po' -type f \
+    -exec sed -i '/msgid "Plugins\?"/{n;s/msgstr "插件"/msgstr "鉴权扩展"/;}' {} +
+find customfeeds package feeds -path '*/root/usr/share/luci/menu.d/*.json' -type f \
+    -exec sed -i '/"admin\/system\/poweroffdevice"/,/"title"/ s/"title": "[^"]*"/"title": "立即关机"/' {} +
+find customfeeds package feeds -path '*/po/zh_*.po' -type f \
+    -exec sed -i '/msgid "关机"/{n;s/msgstr "关机"/msgstr "立即关机"/;}' {} +
+find customfeeds package feeds -path '*/luci-app-cloudflared/root/usr/share/luci/menu.d/luci-app-cloudflared.json' -type f \
+    -exec sed -i 's/"title": "Cloudflare Zero Trust Tunnel"/"title": "Cloudflare 零信任隧道"/g' {} +
+find customfeeds package feeds -path '*/luci-app-cloudflared/po/zh_Hans/cloudflared.po' -type f \
+    -exec sed -i '/msgid "Cloudflare Zero Trust Tunnel"/{n;s/msgstr ".*"/msgstr "Cloudflare 零信任隧道"/;}' {} +
 
 #服务
-sed -i 's|("OpenClash"), 50)|("OpenClash"), 3)|g' customfeeds/lovepackages/luci-app-openclash/luasrc/controller/*.lua
+python3 <<'PY'
+import json
+from pathlib import Path
+
+orders = {
+    "admin/services/udpxy": 10,
+    "admin/services/udproxy": 10,
+    "admin/services/nikki": 20,
+    "admin/services/momo": 30,
+    "admin/services/lucky": 40,
+    "admin/services/mosdns": 50,
+    "admin/services/msd_lite": 60,
+    "admin/services/msd-lite": 60,
+    "admin/services/rtp2httpd": 60,
+    "admin/services/vlmcsd": 70,
+    "admin/services/openclash": 80,
+    "admin/services/ddns": 90,
+}
+
+for root in ("customfeeds", "package", "feeds"):
+    base = Path(root)
+    if not base.exists():
+        continue
+    for path in base.glob("**/root/usr/share/luci/menu.d/*.json"):
+        try:
+            data = json.loads(path.read_text())
+        except Exception:
+            continue
+        changed = False
+        for menu_path, order in orders.items():
+            item = data.get(menu_path)
+            if isinstance(item, dict):
+                item["order"] = order
+                changed = True
+        if changed:
+            path.write_text(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")
+PY
+sed -i 's|("OpenClash"), [0-9]\+)|("OpenClash"), 80)|g' customfeeds/lovepackages/luci-app-openclash/luasrc/controller/*.lua
 sed -i 's/"Vlmcsd KMS 服务器"/"KMS服务"/g' $(grep "KMS 服务器" -rl ./)
 
 #网络
 sed -i 's/"接口"/"网络接口"/g' `grep "接口" -rl ./`
+find feeds customfeeds package -path '*/luci-mod-network/root/usr/share/luci/menu.d/luci-mod-network.json' -type f \
+    -exec sed -i '/"admin\/network\/routes"/,/"title"/ s/"title": "[^"]*"/"title": "网络路由"/' {} +
+find feeds customfeeds package -path '*/luci-mod-network/po/zh_Hans/network.po' -type f \
+    -exec sed -i '/msgid "Routing"/{n;s/msgstr "路由"/msgstr "网络路由"/;}' {} +
+find customfeeds package feeds -path '*/luci-app-bandix/root/usr/share/luci/menu.d/luci-app-bandix.json' -type f \
+    -exec sed -i '/"admin\/network\/bandix"/,/"title"/ s/"title": "[^"]*"/"title": "流量监控"/' {} +
 if [ -f customfeeds/lovepackages/luci-app-bandix/po/zh_Hans/bandix.po ]; then
-    sed -i 's/"Bandix 流量监控"/"流量监控"/g' customfeeds/lovepackages/luci-app-bandix/po/zh_Hans/bandix.po
+    sed -i 's/"Bandix 流量监控"/"流量监控"/g;s/msgstr "Bandix"/msgstr "流量监控"/g' customfeeds/lovepackages/luci-app-bandix/po/zh_Hans/bandix.po
 else
     echo "Info: luci-app-bandix zh_Hans translation not found, skipping rename."
 fi
