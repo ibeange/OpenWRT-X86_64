@@ -100,6 +100,10 @@ sed -i 's/"挂载点"/"挂载路径"/g' feeds/luci/modules/luci-base/po/zh_Hans/
 sed -i 's/"启动项"/"启动管理"/g' feeds/luci/modules/luci-base/po/zh_Hans/base.po
 sed -i 's/"软件包"/"软件管理"/g' feeds/luci/applications/luci-app-package-manager/po/zh_Hans/package-manager.po
 sed -i 's/"终端"/"命令终端"/g' feeds/luci/applications/luci-app-ttyd/po/zh_Hans/ttyd.po
+find customfeeds package feeds -path '*/luci-app-netdata/root/usr/share/luci/menu.d/luci-app-netdata.json' -type f \
+    -exec sed -i 's/"title": "Netdata"/"title": "网络监控"/g' {} +
+find customfeeds package feeds -path '*/luci-app-netdata/po/zh_Hans/netdata.po' -type f \
+    -exec sed -i '/msgid "Netdata"/{n;s/msgstr "Netdata"/msgstr "网络监控"/;}' {} +
 
 #服务
 sed -i 's|("OpenClash"), 50)|("OpenClash"), 3)|g' customfeeds/lovepackages/luci-app-openclash/luasrc/controller/*.lua
